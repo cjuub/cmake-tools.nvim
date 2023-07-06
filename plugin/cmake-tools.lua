@@ -2,7 +2,6 @@
 -- This plugin is intended to support cmake integration in neovim.
 
 local cmake_tools = require("cmake-tools")
-local has_nvim_dap, _ = pcall(require, "dap")
 
 ---------------- Commands ------------------
 
@@ -113,28 +112,6 @@ vim.api.nvim_create_user_command(
     desc = "CMake launch args",
   }
 )
-
-if has_nvim_dap then
-  --- CMake debug
-  vim.api.nvim_create_user_command(
-    "CMakeDebug", -- name
-    cmake_tools.debug, -- command
-    { -- opts
-      nargs = "*",
-      desc = "CMake debug",
-    }
-  )
-  
-  --- CMake quick debug
-  vim.api.nvim_create_user_command(
-    "CMakeQuickDebug", -- name
-    cmake_tools.quick_debug, -- command
-    { -- opts
-      nargs = "*",
-      desc = "CMake quick debug",
-    }
-  )
-end
 
 --- CMake select build type
 vim.api.nvim_create_user_command(
