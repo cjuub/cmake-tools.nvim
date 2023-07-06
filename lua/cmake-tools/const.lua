@@ -12,14 +12,6 @@ local const = {
     short = { show = true },
     long = { show = true, max_length = 40 }
   },
-  cmake_dap_configuration = {
-    name = "cpp",
-    type = "codelldb",
-    request = "launch",
-    stopOnEntry = false,
-    runInTerminal = true,
-    console = "integratedTerminal",
-  },
   cmake_always_use_terminal = false, -- if true, use terminal for generate, build, clean, install, run, else only use terminal for run, use quickfix for others
   cmake_quickfix_opts = {
     show = "always", -- "always", "only_on_error"

@@ -36,14 +36,6 @@ require("cmake-tools").setup {
     short = { show = true }, -- whether to show short message
     long = { show = true, max_length = 40 } -- whether to show long message
   },
-  cmake_dap_configuration = { -- debug settings for cmake
-    name = "cpp",
-    type = "codelldb",
-    request = "launch",
-    stopOnEntry = false,
-    runInTerminal = true,
-    console = "integratedTerminal",
-  },
   cmake_always_use_terminal = false, -- if true, use terminal for generate, build, clean, install, run, etc, except for debug, else only use terminal for run, use quickfix for others
   cmake_quickfix_opts = { -- quickfix settings for cmake, quickfix will be used when `cmake_always_use_terminal` is false
     show = "always", -- "always", "only_on_error"
