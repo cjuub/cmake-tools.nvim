@@ -599,7 +599,13 @@ function cmake.select_kit(callback)
   end
 end
 
-function cmake.select_configure_preset(callback)
+function cmake.select_preset(preset, callback)
+  cmake.select_configure_preset(preset, function ()
+    cmake.select_build_preset(preset, callback)
+  end)
+end
+
+function cmake.select_configure_preset(preset, callback)
   if utils.has_active_job(const.cmake_always_use_terminal) then
     return
   end
@@ -618,36 +624,44 @@ function cmake.select_configure_preset(callback)
       local p = configure_presets[p_name]
       return p.displayName or p.name
     end
-    vim.ui.select(configure_preset_names,
-      {
-        prompt = "Select cmake configure presets",
-        format_item = format_preset_name
-      },
-      vim.schedule_wrap(
-        function(choice)
-          if not choice then
-            return
+    if preset == nil or preset == "" then
+      vim.ui.select(configure_preset_names,
+        {
+          prompt = "Select cmake configure presets",
+          format_item = format_preset_name
+        },
+        vim.schedule_wrap(
+          function(choice)
+            if not choice then
+              return
+            end
+            if config.configure_preset ~= choice then
+              config.configure_preset = choice
+              config.build_type = presets.get_build_type(
+                presets.get_preset_by_name(choice, "configurePresets")
+              )
+            end
           end
-          if config.configure_preset ~= choice then
-            config.configure_preset = choice
-            config.build_type = presets.get_build_type(
-              presets.get_preset_by_name(choice, "configurePresets")
-            )
-          end
-          if type(callback) == "function" then
-            callback()
-          else
-            cmake.generate({ bang = false, fargs = {} }, nil)
-          end
-        end
+        )
       )
-    )
+    else
+      config.configure_preset = preset
+      config.build_type = presets.get_build_type(
+        presets.get_preset_by_name(preset, "configurePresets")
+      )
+    end
+
+    if type(callback) == "function" then
+      callback()
+    else
+      cmake.generate({ bang = false, fargs = {} }, nil)
+    end
   else
     log.error("Cannot find CMake[User]Presets.json at Root!!")
   end
 end
 
-function cmake.select_build_preset(callback)
+function cmake.select_build_preset(preset, callback)
   if utils.has_active_job(const.cmake_always_use_terminal) then
     return
   end
@@ -666,21 +680,26 @@ function cmake.select_build_preset(callback)
       local p = build_presets[p_name]
       return p.displayName or p.name
     end
-    vim.ui.select(build_preset_names, { prompt = "Select cmake build presets", format_item = format_preset_name },
-      vim.schedule_wrap(
-        function(choice)
-          if not choice then
-            return
+    if preset == nil or preset == "" then
+      vim.ui.select(build_preset_names, { prompt = "Select cmake build presets", format_item = format_preset_name },
+        vim.schedule_wrap(
+          function(choice)
+            if not choice then
+              return
+            end
+            if config.build_preset ~= choice then
+              config.build_preset = choice
+            end
           end
-          if config.build_preset ~= choice then
-            config.build_preset = choice
-          end
-          if type(callback) == "function" then
-            callback()
-          end
-        end
+        )
       )
-    )
+    else
+      config.build_preset = preset
+    end
+
+    if type(callback) == "function" then
+      callback()
+    end
   else
     log.error("Cannot find CMake[User]Presets.json at Root!!")
   end
