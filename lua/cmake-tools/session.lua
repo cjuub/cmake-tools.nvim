@@ -15,17 +15,21 @@ local function get_current_path()
   local current_path = vim.loop.cwd()
   local clean_path = current_path:gsub("/", "")
 
-  local path;
+  local cache_path;
 
   if osys.islinux then
-    path = session.dir.unix .. clean_path .. ".lua";
+    cache_path = session.dir.unix
   elseif osys.ismac then
-    path = session.dir.mac .. clean_path .. ".lua";
+    cache_path = session.dir.mac
   elseif osys.iswsl then
-    path = session.dir.unix .. clean_path .. ".lua";
+    cache_path = session.dir.unix
   elseif osys.iswin32 then
-    path = session.dir.win .. clean_path .. ".lua";
+    cache_path = session.dir.win
   end
+
+  utils.mkdir(cache_path)
+
+  local path = cache_path .. clean_path .. ".lua";
 
   if not utils.file_exists(path) then
     os.execute("touch " .. path)
